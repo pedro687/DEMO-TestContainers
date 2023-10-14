@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
@@ -48,6 +49,8 @@ class NotaFiscalServiceTest {
     static void kafkaProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
         registry.add("spring.datasource.url", () -> mySQLContainer.getJdbcUrl());
+        registry.add("spring.kafka.admin.properties.min-in-sync-replicas", () -> 1);
+        registry.add("spring.kafka.admin.properties.number-of-replicas", () -> 1);
         registry.add("spring.datasource.driverClassName", () -> mySQLContainer.getDriverClassName());
         registry.add("spring.datasource.username", () -> mySQLContainer.getUsername());
         registry.add("spring.datasource.password", () -> mySQLContainer.getPassword());
@@ -58,7 +61,7 @@ class NotaFiscalServiceTest {
     @Test
     void test_containers() {
         Assertions.assertNotNull(kafkaContainer);
-        Assertions.assertNotNull(mySQLContainer);
+        Assertions.assertTrue(kafkaContainer.isRunning());
     }
 
     @Test
