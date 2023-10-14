@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.controller.NotaFiscalDto;
+import com.example.demo.repository.NotaFiscalRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ class NotaFiscalServiceTest {
 
     @Autowired
     TestRestTemplate testRestTemplate;
+
+    @Autowired
+    NotaFiscalRepository notaFiscalRepository;
 
     @Container
     static KafkaContainer kafkaContainer  = new KafkaContainer(
@@ -72,5 +76,10 @@ class NotaFiscalServiceTest {
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
+
+        var findInDb = notaFiscalRepository.findById(1L);
+
+        assertTrue(findInDb.isPresent());
+        assertEquals(notaFiscalDto.number(), findInDb.get().getNumero());
     }
 }
